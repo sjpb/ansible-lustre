@@ -1,0 +1,10 @@
+# new stuff:
+lustre_release: "2.12.5"
+lustre_kernel: "3.10.0-1127.19.1.el7.x86_64"
+lustre_reformat: false
+# NB: release and kernel need to match centos version - this is set up for 7.8
+# lustre_squash_gid: 99
+# lustre_squash_uid: 99
+
+# no default:
+# lustre_fs_name:
