@@ -1,10 +1,24 @@
 ---
 
+- name: Gather facts so can define MGS address
+  hosts: all
+  tasks:
+    - setup:
+
 - name: Configure lustre server/MGS
   hosts: servers
-  gather_facts: true
+  gather_facts: false
   become: true
+  tags: servers
   tasks:
     - include_role:
         name: server
-      
+
+- name: Configure lustre clients
+  hosts: clients
+  gather_facts: false
+  become: true
+  tags: clients
+  tasks:
+    - include_role:
+        name: client

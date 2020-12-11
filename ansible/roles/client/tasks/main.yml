@@ -1,0 +1,76 @@
+---
+# - name: check Centos version
+#   assert:
+#     that:
+#       - ansible_distribution_version in lustre_releases
+# - name: select lustre version info # just for brevity 
+#   set_fact:
+#     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
+# - name: enable lustre client repo
+#   yum_repository:
+#     name: lustre-client
+#     description: lustre-client
+#     baseurl: "{{ lustre_release.client_repo }}"
+#     gpgcheck: no
+# - name: enable kernel repo
+#   yum_repository:
+#     name: kernel
+#     description: kernel packages
+#     baseurl: "{{ lustre_release.kernel_repo }}"
+#     gpgcheck: no
+# - name: install epel (for DKMS)
+#   package:
+#     name: epel-release
+# - name: ensure kernel correct
+#   yum:
+#     name: kernel-{{ lustre_release.kernel_ver }}
+# - name: ensure kernel headers available
+#   yum:
+#     #name: kernel-devel-{{ lustre_release.kernel_ver }}
+#     name: http://linuxsoft.cern.ch/cern/centos/8/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.19.1.el8_2.x86_64.rpm
+# - name: Install Lustre Client DKMS
+#   yum:
+#     name: "lustre-client-dkms-{{ lustre_release.lustre_ver }}"
+#     state: present
+# - name: Install Lustre Client kmods
+#   yum:
+#     name: "kmod-lustre-client-{{ lustre_release.lustre_ver }}"
+#     state: present
+# - name: Install Lustre Client
+#   yum:
+#     name: "lustre-client-{{ lustre_release[ansible_distribution_version].lustre_ver }}"
+#     state: present
+- name: Install openhpc lustre client
+  yum:
+    name: lustre-client-ohpc
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+# - name: configure and enable lnet
+#   import_tasks: lnet.yml
+
+# - name: raise client GSS key debug level
+#   command:
+#     cmd: "lctl set_param sptlrpc.gss.lgss_keyring.debug_level{{'='}}3"
+#     removes: "/etc/lustre{{ inventory_hostname | replace('-', '_') }}.client.key }}" # doesn't actually remove, but skips if not using ssk
+#   # TODO: not convinced this works, try
+#   # "echo 3 > /proc/fs/lustre/sptlrpc/gss/lgss_keyring/debug_level" instead
+
+- name: create lustre config directory
+  # NB: done even if not using ssk as can always mount with -o skpath=/etc/lustre, it just won't load any keys if it's empty.
+  file:
+    path: /etc/lustre
+    state: directory
+    mode: 0600
+- mount:
+    fstype: lustre
+    src: "{{ lustre_mgs_addr }}@{{ lustre_mgs_lnet }}:/{{ lustre_fs_name }}"
+    path: "{{ lustre_mount_point }}"
+    state: mounted
+    opts: "skpath=/etc/lustre,defaults,_netdev,noauto,x-systemd.automount,x-systemd.requires=lnet.service"
+    # opts are systemd defaults from http://wiki.lustre.org/Mounting_a_Lustre_File_System_on_Client_Nodes
+  register: mount
+  #until: "mount.failed == false"
+  #retries: 20
+  #delay: 1

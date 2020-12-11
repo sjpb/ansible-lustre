@@ -1,23 +1,27 @@
+- name: check Centos version
+  assert:
+    that:
+      - ansible_distribution_version in lustre_releases
+- name: select lustre version info # just for brevity 
+  set_fact:
+    lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
+- name: install kernel
+  yum:
+    name: https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/kernel-{{ lustre_release.kernel_ver }}.rpm
 - name: check kernel version
   shell:
     cmd: "uname -r"
   register: uname
   changed_when: false
-- name: install kernel
-  yum:
-    name: https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/kernel-{{ lustre_kernel }}.rpm
-    state: present
-  register: update_kernel
-  when: uname.stdout != lustre_kernel
 - name: reboot if kernel updated
   reboot:
-  when: update_kernel is changed
+  when: uname.stdout != lustre_release.kernel_ver
 - name: enable lustre server repo
   yum_repository:
     name: lustre-server
     description: lustre-server
     file: lustre-repo
-    baseurl: https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_release }}/el7/patchless-ldiskfs-server
+    baseurl: https://downloads.whamcloud.com/public/lustre/lustre-{{ lustre_release.lustre_ver }}/el{{ ansible_distribution_major_version }}/patchless-ldiskfs-server
     gpgcheck: no
 - name: enable lustre e2fs repo
   yum_repository:
@@ -28,8 +32,7 @@
     gpgcheck: no
 - name: Install Lustre Server
   yum:
-    name: "lustre-{{ lustre_release }}"
-    state: present
+    name: "lustre-{{ lustre_release.lustre_ver }}"
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
   selinux:
     policy: targeted

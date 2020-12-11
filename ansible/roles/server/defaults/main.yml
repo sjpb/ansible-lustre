@@ -1,6 +1,9 @@
-# new stuff:
-lustre_release: "2.12.5"
-lustre_kernel: "3.10.0-1127.19.1.el7.x86_64"
+# keyed off ansible_distribution_version
+# see https://wiki.whamcloud.com/display/PUB/Lustre+Support+Matrix
+lustre_releases: 
+  "7.8":
+    lustre_ver: "2.12.5"
+    kernel_ver: "3.10.0-1127.19.1.el7.x86_64"
 lustre_reformat: false
 # NB: release and kernel need to match centos version - this is set up for 7.8
 # lustre_squash_gid: 99
