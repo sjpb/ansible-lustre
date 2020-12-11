@@ -1,48 +1,48 @@
 ---
-# - name: check Centos version
-#   assert:
-#     that:
-#       - ansible_distribution_version in lustre_releases
-# - name: select lustre version info # just for brevity 
-#   set_fact:
-#     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
-# - name: enable lustre client repo
-#   yum_repository:
-#     name: lustre-client
-#     description: lustre-client
-#     baseurl: "{{ lustre_release.client_repo }}"
-#     gpgcheck: no
-# - name: enable kernel repo
-#   yum_repository:
-#     name: kernel
-#     description: kernel packages
-#     baseurl: "{{ lustre_release.kernel_repo }}"
-#     gpgcheck: no
-# - name: install epel (for DKMS)
-#   package:
-#     name: epel-release
-# - name: ensure kernel correct
-#   yum:
-#     name: kernel-{{ lustre_release.kernel_ver }}
-# - name: ensure kernel headers available
-#   yum:
-#     #name: kernel-devel-{{ lustre_release.kernel_ver }}
-#     name: http://linuxsoft.cern.ch/cern/centos/8/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.19.1.el8_2.x86_64.rpm
-# - name: Install Lustre Client DKMS
-#   yum:
-#     name: "lustre-client-dkms-{{ lustre_release.lustre_ver }}"
-#     state: present
-# - name: Install Lustre Client kmods
-#   yum:
-#     name: "kmod-lustre-client-{{ lustre_release.lustre_ver }}"
-#     state: present
-# - name: Install Lustre Client
-#   yum:
-#     name: "lustre-client-{{ lustre_release[ansible_distribution_version].lustre_ver }}"
-#     state: present
-- name: Install openhpc lustre client
+- name: check Centos version
+  assert:
+    that:
+      - ansible_distribution_version in lustre_releases
+- name: select lustre version info # just for brevity 
+  set_fact:
+    lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
+- name: enable lustre client repo
+  yum_repository:
+    name: lustre-client
+    description: lustre-client
+    baseurl: "{{ lustre_release.client_repo }}"
+    gpgcheck: no
+- name: enable kernel repo
+  yum_repository:
+    name: kernel
+    description: kernel packages
+    baseurl: "{{ lustre_release.kernel_repo }}"
+    gpgcheck: no
+- name: install epel (for DKMS)
+  package:
+    name: epel-release
+- name: ensure kernel correct
   yum:
-    name: lustre-client-ohpc
+    name: kernel-{{ lustre_release.kernel_ver }}
+- name: ensure kernel headers available
+  yum:
+    #name: kernel-devel-{{ lustre_release.kernel_ver }}
+    name: http://linuxsoft.cern.ch/cern/centos/8/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.19.1.el8_2.x86_64.rpm
+- name: Install Lustre Client DKMS
+  yum:
+    name: "lustre-client-dkms-{{ lustre_release.lustre_ver }}"
+    state: present
+- name: Install Lustre Client kmods
+  yum:
+    name: "kmod-lustre-client-{{ lustre_release.lustre_ver }}"
+    state: present
+- name: Install Lustre Client
+  yum:
+    name: "lustre-client-{{ lustre_release.lustre_ver }}"
+    state: present
+# - name: Install openhpc lustre client
+#   yum:
+#     name: lustre-client-ohpc
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
   selinux:
     policy: targeted

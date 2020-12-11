@@ -7,7 +7,7 @@
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
 - name: install kernel
   yum:
-    name: https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/kernel-{{ lustre_release.kernel_ver }}.rpm
+    name: https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/kernel-{{ lustre_release.kernel_ver }}.{{ ansible_architecture }}.rpm
 - name: check kernel version
   shell:
     cmd: "uname -r"
@@ -15,7 +15,7 @@
   changed_when: false
 - name: reboot if kernel updated
   reboot:
-  when: uname.stdout != lustre_release.kernel_ver
+  when: lustre_release.kernel_ver not in uname.stdout
 - name: enable lustre server repo
   yum_repository:
     name: lustre-server

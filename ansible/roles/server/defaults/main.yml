@@ -3,7 +3,7 @@
 lustre_releases: 
   "7.8":
     lustre_ver: "2.12.5"
-    kernel_ver: "3.10.0-1127.19.1.el7.x86_64"
+    kernel_ver: "3.10.0-1127.19.1.el7"
 lustre_reformat: false
 # NB: release and kernel need to match centos version - this is set up for 7.8
 # lustre_squash_gid: 99
