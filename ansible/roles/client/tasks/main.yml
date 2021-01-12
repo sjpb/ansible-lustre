@@ -6,28 +6,30 @@
 - name: select lustre version info # just for brevity 
   set_fact:
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
+- name: check kernel version # TODO: should also check yum to make sure we're not going to upgrade on reboot?
+  shell:
+    cmd: "uname -r"
+  register: uname
+  changed_when: false
+#   failed_when: lustre_release.kernel_ver not in uname.stdout # TODO: document fact that (unlke server, don't change client kernel)
 - name: enable lustre client repo
   yum_repository:
     name: lustre-client
     description: lustre-client
     baseurl: "{{ lustre_release.client_repo }}"
     gpgcheck: no
-- name: enable kernel repo
-  yum_repository:
-    name: kernel
-    description: kernel packages
-    baseurl: "{{ lustre_release.kernel_repo }}"
-    gpgcheck: no
 - name: install epel (for DKMS)
   package:
     name: epel-release
-- name: ensure kernel correct
+# - name: enable kernel repo # see comment in vars - can't make this work
+#   yum_repository:
+#     name: kernel
+#     description: kernel packages
+#     baseurl: "{{ lustre_release.kernel_repo }}"
+#     gpgcheck: no
+- name: install kernel headers
   yum:
-    name: kernel-{{ lustre_release.kernel_ver }}
-- name: ensure kernel headers available
-  yum:
-    #name: kernel-devel-{{ lustre_release.kernel_ver }}
-    name: http://linuxsoft.cern.ch/cern/centos/8/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.19.1.el8_2.x86_64.rpm
+    name: "{{ lustre_release.kernel_repo }}/kernel-devel-{{ uname.stdout }}.rpm"
 - name: Install Lustre Client DKMS
   yum:
     name: "lustre-client-dkms-{{ lustre_release.lustre_ver }}"
@@ -40,15 +42,14 @@
   yum:
     name: "lustre-client-{{ lustre_release.lustre_ver }}"
     state: present
-# - name: Install openhpc lustre client
-#   yum:
-#     name: lustre-client-ohpc
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
   selinux:
     policy: targeted
     state: permissive
+
 # - name: configure and enable lnet
 #   import_tasks: lnet.yml
+#   when: lustre_lnet != 'tcp' # which is default
 
 # - name: raise client GSS key debug level
 #   command:
@@ -63,9 +64,10 @@
     path: /etc/lustre
     state: directory
     mode: 0600
-- mount:
+- name: mount lustre filesystem
+  mount:
     fstype: lustre
-    src: "{{ lustre_mgs_addr }}@{{ lustre_mgs_lnet }}:/{{ lustre_fs_name }}"
+    src: "{{ lustre_mgs_addr }}@{{ lustre_lnet }}:/{{ lustre_fs_name }}"
     path: "{{ lustre_mount_point }}"
     state: mounted
     opts: "skpath=/etc/lustre,defaults,_netdev,noauto,x-systemd.automount,x-systemd.requires=lnet.service"
