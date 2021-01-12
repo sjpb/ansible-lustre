@@ -1,5 +1,5 @@
 lustre_reformat: false # need this true if e.g. mdt was formatted with wrong index
-lustre_fs_name: 'dac'
+lustre_fs_name: '' # TODO: check this is changed!
 lustre_mgs_addr: ''
 lustre_mgs_lnet: '' 
 lustre_mgt: ''

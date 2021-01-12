@@ -25,6 +25,7 @@
         name: server
       vars:
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
+        lustre_fs_name: 'dac'
         lustre_mgt: "{{ loopdev.dev }}"
         lustre_mdts:
           - /dev/nvme0n1
