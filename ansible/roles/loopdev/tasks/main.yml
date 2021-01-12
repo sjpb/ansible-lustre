@@ -11,10 +11,12 @@
 - name: Ensure mount point exists
   file:
     path: "{{ loopdev_mountpoint }}"
-    state: directory  # TODO: owner/permissions??  
+    state: directory  # TODO: owner/permissions??
+  when: loopdev_mountpoint is defined
 - name: Mount
   mount:
     path: "{{ loopdev_mountpoint }}"
     src: "{{ loopdev.dev }}"
     state: "{{ loopdev_mountstate }}"
     fstype: "{{ loopdev_fstype }}"
+  when: loopdev_mountpoint is defined

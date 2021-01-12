@@ -5,6 +5,15 @@ lustre_releases:
     lustre_ver: "2.12.5"
     kernel_ver: "3.10.0-1127.19.1.el7"
 lustre_reformat: false
+
+lustre_fs_name: 'dac'
+lustre_mgs_addr: ''
+lustre_mgs_lnet: '' 
+lustre_mgt: ''
+lustre_mdts: []
+lustre_osts: []
+lustre_lnet: 'tcp'
+
 # NB: release and kernel need to match centos version - this is set up for 7.8
 # lustre_squash_gid: 99
 # lustre_squash_uid: 99

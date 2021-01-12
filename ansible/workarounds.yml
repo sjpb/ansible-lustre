@@ -1,0 +1,16 @@
+- gather_facts: no
+  hosts: servers
+  become: yes
+  tasks:
+  - name: "Fix mtu"
+    lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-p8p2
+      regexp: MTU=
+      line: MTU=1490
+    register: mtu
+  - name: "Restart network service"
+    service:
+      name: network
+      state: restarted 
+    when: mtu.changed # TODO: this should rather check the mtu in ifconfig
+    

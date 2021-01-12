@@ -1,0 +1,43 @@
+---
+
+- name: Configure lustre servers
+  hosts: servers
+  gather_facts: true
+  become: true
+  tags: servers
+  tasks:
+    # - include_role:
+    #     name: stackhpc.ofed
+    #   vars:
+    #     ofed_repo_file: http://linux.mellanox.com/public/repo/mlnx_ofed/5.1-2.3.7.1/rhel8.2/mellanox_mlnx_ofed.repo
+    # - meta: end_play
+    - include_role:
+        name: loopdev
+      vars:
+        loopdev_path: "/var/mgt"
+        loopdev_size: 20000
+        # loopdev_mountpoint: "/mnt/mgt"
+      register: loopdev
+      when: "'mgs' in group_names"
+    - debug:
+        var: loopdev
+    - include_role:
+        name: server
+      vars:
+        lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
+        lustre_mgt: "{{ loopdev.dev }}"
+        lustre_mdts:
+          - /dev/nvme0n1
+          - /dev/nvme6n1
+        lustre_osts:
+          - /dev/nvme1n1
+          - /dev/nvme2n1
+          - /dev/nvme3n1
+          - /dev/nvme4n1
+          - /dev/nvme5n1
+          - /dev/nvme7n1
+          - /dev/nvme8n1
+          - /dev/nvme9n1
+          - /dev/nvme10n1
+          - /dev/nvme11n1
+        

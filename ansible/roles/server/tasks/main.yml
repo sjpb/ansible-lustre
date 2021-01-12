@@ -2,6 +2,7 @@
   assert:
     that:
       - ansible_distribution_version in lustre_releases
+    fail_msg: "ansible_distribution_version must be one of {{ lustre_releases.keys() }}, not {{ ansible_distribution_version }}"
 - name: select lustre version info # just for brevity 
   set_fact:
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
@@ -37,7 +38,86 @@
   selinux:
     policy: targeted
     state: permissive
+
 # - name: configure and enable lnet
 #   import_tasks: lnet.yml
-- name: format and mount MDT/OST/MGS disks
-  import_tasks: format.yml
+#   when: lustre_lnet != 'tcp' # which is default
+
+# NB might need need clients UNMOUNTED and nodemap DEACTIVATED before running this if its making changes?
+# NB if you are using the default lnet (i.e. not specifically setting up lnets) then it is @tcp, not "@tcp1".
+- name: Load lustre
+  command: modprobe lustre
+  changed_when: False
+
+- name: Format MGT
+  command: /usr/sbin/mkfs.lustre --mgs {{ lustre_mgt }}
+  register: command_result
+  failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
+  changed_when: "command_result.rc == 0"
+  when: lustre_mgt is defined
+  # TODO: run `lctl device_list` and check the management client entry matches the mgs node - if not, add reformat? "1 UP mgc MGC10.43.108.228@tcp 992a19e5-c7cd-b9af-b499-43e1f6b4348d 4"
+
+- name: Format MDTs
+  command: "/usr/sbin/mkfs.lustre --mdt {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item_index }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item }}"
+  register: command_result
+  loop: "{{ lustre_mdts }}"
+  loop_control:
+    index_var: item_index
+  failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
+  changed_when: "command_result.rc == 0"
+  # TODO: see check against mgs nid above
+
+- name: Format OSTs
+  command: "/usr/sbin/mkfs.lustre --ost {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item_index }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item }}"
+  register: command_result
+  loop: "{{ lustre_osts }}"
+  loop_control:
+    index_var: item_index
+  failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
+  changed_when: "command_result.rc == 0"
+
+- name: Create MGS mount dir
+  file:
+    path: /lustre/mgt
+    state: directory
+    recurse: yes
+
+- name: mount MGSs
+  command: mount -t lustre {{ lustre_mgt }} /lustre/mgt
+  args:
+    warn: false
+  register: command_result
+  failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
+  changed_when: "command_result.rc == 0"
+  when: lustre_mgt is defined
+  
+
+# TODO: the docs state the convention as /lustre/<fsname>/mdt<n>, but tbh that's less clear
+- name: Create MDT mount dir
+  file:
+    path: /lustre/{{ lustre_fs_name }}/mdt/{{ item }}
+    state: directory
+    recurse: yes
+  loop: "{{ lustre_mdts }}"
+
+- name: mount MDTs
+  command: mount -t lustre {{ item }} /lustre/{{ lustre_fs_name }}/mdt/{{ item }}
+  register: command_result
+  failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
+  changed_when: "command_result.rc == 0"
+  loop: "{{ lustre_mdts }}"
+
+- name: Create OST mount dir
+  file:
+    path: /lustre/{{ lustre_fs_name }}/OST/{{ item }}
+    state: directory
+    recurse: yes
+  loop: "{{ lustre_osts }}"
+
+# TODO: recommended name is /lustre/<fsname>/ost<n>
+- name: mount OSTs
+  command: mount -t lustre {{ item }} /lustre/{{ lustre_fs_name }}/ost/{{ item }}
+  register: command_result
+  failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
+  changed_when: "command_result.rc == 0"
+  loop: "{{ lustre_osts }}"
