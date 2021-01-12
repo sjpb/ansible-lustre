@@ -1,11 +1,4 @@
-# keyed off ansible_distribution_version
-# see https://wiki.whamcloud.com/display/PUB/Lustre+Support+Matrix
-lustre_releases: 
-  "7.8":
-    lustre_ver: "2.12.5"
-    kernel_ver: "3.10.0-1127.19.1.el7"
-lustre_reformat: false
-
+lustre_reformat: false # need this true if e.g. mdt was formatted with wrong index
 lustre_fs_name: 'dac'
 lustre_mgs_addr: ''
 lustre_mgs_lnet: '' 
