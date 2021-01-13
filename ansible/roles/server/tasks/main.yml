@@ -6,9 +6,9 @@
 - name: select lustre version info # just for brevity 
   set_fact:
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
-- name: install kernel
-  yum:
-    name: "{{ lustre_release.kernel_pkg }}"
+# - name: install kernel
+#   yum:
+#     name: "{{ lustre_release.kernel_pkg }}"
 - name: check kernel version
   shell:
     cmd: "uname -r"
@@ -59,21 +59,17 @@
   # TODO: run `lctl device_list` and check the management client entry matches the mgs node - if not, add reformat? "1 UP mgc MGC10.43.108.228@tcp 992a19e5-c7cd-b9af-b499-43e1f6b4348d 4"
 
 - name: Format MDTs
-  command: "/usr/sbin/mkfs.lustre --mdt {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item_index }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item }}"
+  command: "/usr/sbin/mkfs.lustre --mdt {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item.key }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item.value }}"
   register: command_result
-  loop: "{{ lustre_mdts }}"
-  loop_control:
-    index_var: item_index
+  loop: "{{ lustre_mdts | dict2items }}"
   failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
   changed_when: "command_result.rc == 0"
   # TODO: see check against mgs nid above
 
 - name: Format OSTs
-  command: "/usr/sbin/mkfs.lustre --ost {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item_index }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item }}"
+  command: "/usr/sbin/mkfs.lustre --ost {% if lustre_reformat | bool %}--reformat{% endif %} --fsname={{ lustre_fs_name }} --index={{ item.key }} --mgsnode={{ lustre_mgs_addr }}@{{ lustre_lnet }} {{ item.value }}"
   register: command_result
-  loop: "{{ lustre_osts }}"
-  loop_control:
-    index_var: item_index
+  loop: "{{ lustre_osts  | dict2items }}"
   failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
   changed_when: "command_result.rc == 0"
   # TODO: see above, or maybe use `sudo lfs osts`?
@@ -95,38 +91,37 @@
   
 - name: Create MDT mount dir
   file:
-    path: /lustre/{{ lustre_fs_name }}/mdt{{ item_index }}
+    path: /lustre/{{ lustre_fs_name }}/mdt{{ item.key }}
     state: directory
     recurse: yes
-  loop: "{{ lustre_mdts }}"
-  loop_control:
-    index_var: item_index
+  loop: "{{ lustre_mdts | dict2items }}"
 
+# TODO: consider order advice under Why not start the MDS after the OSSs? at https://wiki.lustre.org/Starting_and_Stopping_Lustre_Services
 - name: mount MDTs
-  command: mount -t lustre {{ item }} /lustre/{{ lustre_fs_name }}/mdt{{ item_index }} # has to be an mdt0
-  args:
-    warn: false
-  register: command_result
-  failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
-  changed_when: "command_result.rc == 0"
-  loop: "{{ lustre_mdts }}"
-  loop_control:
-    index_var: item_index
-
+  mount:
+    fstype: lustre
+    src: "{{ item.value }}"
+    path: "/lustre/{{ lustre_fs_name }}/mdt{{ item.key }}"
+    state: mounted
+  # command: mount -t lustre {{ item.value }} /lustre/{{ lustre_fs_name }}/mdt{{ item.key }} # has to be an mdt0
+  # args:
+  #   warn: false
+  # register: command_result
+  # failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
+  # changed_when: "command_result.rc == 0"
+  loop: "{{ lustre_mdts | dict2items }}"
+  
 - name: Create OST mount dir
   file:
-    path: /lustre/{{ lustre_fs_name }}/ost{{ item_index }}
+    path: /lustre/{{ lustre_fs_name }}/ost{{ item.key }}
     state: directory
     recurse: yes
-  loop: "{{ lustre_osts }}"
-  loop_control:
-    index_var: item_index
-
+  loop: "{{ lustre_osts | dict2items }}"
+  
 - name: mount OSTs
-  command: mount -t lustre {{ item }} /lustre/{{ lustre_fs_name }}/ost{{ ansible_loop.index0 }}
+  command: mount -t lustre {{ item.value }} /lustre/{{ lustre_fs_name }}/ost{{ item.key }}
   register: command_result
   failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
   changed_when: "command_result.rc == 0"
-  loop: "{{ lustre_osts }}"
-  loop_control:
-    extended: yes
+  loop: "{{ lustre_osts | dict2items }}"
+  

@@ -21,23 +21,10 @@
       when: "'mgs' in group_names"
     - debug:
         msg: "Got loop device {{ loopdev.dev }} ({{ loopdev.fstype }}) for backing file {{ loopdev.path }} "
+      when: "'mgs' in group_names"
     - include_role:
         name: server
       vars:
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
         lustre_fs_name: 'dac'
-        lustre_mdts:
-          - /dev/nvme0n1
-          - /dev/nvme6n1
-        lustre_osts:
-          - /dev/nvme1n1
-          - /dev/nvme2n1
-          - /dev/nvme3n1
-          - /dev/nvme4n1
-          - /dev/nvme5n1
-          - /dev/nvme7n1
-          - /dev/nvme8n1
-          - /dev/nvme9n1
-          - /dev/nvme10n1
-          - /dev/nvme11n1
-        
+        lustre_reformat: true
