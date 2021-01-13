@@ -6,9 +6,9 @@
 - name: select lustre version info # just for brevity 
   set_fact:
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
-# - name: install kernel
-#   yum:
-#     name: "{{ lustre_release.kernel_pkg }}"
+- name: install kernel
+  yum:
+    name: "{{ lustre_release.kernel_pkg }}"
 - name: check kernel version
   shell:
     cmd: "uname -r"
