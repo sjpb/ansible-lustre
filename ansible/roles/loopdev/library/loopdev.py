@@ -53,10 +53,10 @@ def run_module():
     )
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
-    result = {"changed": False}
-
+    
     path = module.params["path"]
     fstype = module.params["fstype"]
+    result = {"changed": False, "path": path, "fstype": fstype}
     
     if module.check_mode:
         module.exit_json(**result)

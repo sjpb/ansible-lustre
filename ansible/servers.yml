@@ -20,13 +20,12 @@
       register: loopdev
       when: "'mgs' in group_names"
     - debug:
-        var: loopdev
+        msg: "Got loop device {{ loopdev.dev }} ({{ loopdev.fstype }}) for backing file {{ loopdev.path }} "
     - include_role:
         name: server
       vars:
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
         lustre_fs_name: 'dac'
-        lustre_mgt: "{{ loopdev.dev }}"
         lustre_mdts:
           - /dev/nvme0n1
           - /dev/nvme6n1

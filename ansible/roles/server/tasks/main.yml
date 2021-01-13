@@ -2,13 +2,13 @@
   assert:
     that:
       - ansible_distribution_version in lustre_releases
-    fail_msg: "ansible_distribution_version must be one of {{ lustre_releases.keys() }}, not {{ ansible_distribution_version }}"
+    fail_msg: "ansible_distribution_version must be one of {{ lustre_releases.keys() | list }}, not {{ ansible_distribution_version }}"
 - name: select lustre version info # just for brevity 
   set_fact:
     lustre_release: "{{ lustre_releases[ansible_distribution_version] }}"
 - name: install kernel
   yum:
-    name: https://linuxsoft.cern.ch/cern/centos/7/updates/x86_64/Packages/kernel-{{ lustre_release.kernel_ver }}.{{ ansible_architecture }}.rpm
+    name: "{{ lustre_release.kernel_pkg }}"
 - name: check kernel version
   shell:
     cmd: "uname -r"
@@ -55,7 +55,7 @@
   register: command_result
   failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
   changed_when: "command_result.rc == 0"
-  when: lustre_mgt is defined
+  when: lustre_mgt | default('')
   # TODO: run `lctl device_list` and check the management client entry matches the mgs node - if not, add reformat? "1 UP mgc MGC10.43.108.228@tcp 992a19e5-c7cd-b9af-b499-43e1f6b4348d 4"
 
 - name: Format MDTs
@@ -91,7 +91,7 @@
   register: command_result
   failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
   changed_when: "command_result.rc == 0"
-  when: lustre_mgt is defined
+  when: lustre_mgt | default('')
   
 - name: Create MDT mount dir
   file:
