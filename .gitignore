@@ -133,4 +133,4 @@ dmypy.json
 terraform.tfstate*
 
 # project-specific
-inventory
+#inventory

@@ -1,0 +1,13 @@
+[all:vars]
+ansible_user=centos
+
+[servers]
+dac-h22d5-u37-sv
+dac-h22d8-u37-sv
+
+[mgs]
+dac-h22d5-u37-sv
+
+[clients]
+cpu-h24c5-u34-svn1
+cpu-h24c5-u34-svn3

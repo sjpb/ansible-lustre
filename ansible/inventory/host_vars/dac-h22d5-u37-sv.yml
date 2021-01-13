@@ -1,0 +1,15 @@
+---
+lustre_mdts:
+    0: /dev/nvme0n1
+    1: /dev/nvme6n1
+lustre_osts:
+    0: /dev/nvme1n1
+    1: /dev/nvme2n1
+    2: /dev/nvme3n1
+    3: /dev/nvme4n1
+    4: /dev/nvme5n1
+    5: /dev/nvme7n1
+    6: /dev/nvme8n1
+    7: /dev/nvme9n1
+    8: /dev/nvme10n1
+    9: /dev/nvme11n1
