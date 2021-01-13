@@ -1,0 +1,12 @@
+- name: POC for monitoring
+  hosts: servers
+  gather_facts: true
+  #become: true
+  tasks:
+    - include_role:
+        name: lustre-exporter
+      vars:
+        lustre_exporter_state: started
+      
+
+      

@@ -1,0 +1,10 @@
+lustre_exporter_state: started # started, stopped only currently supported ones
+lustre_exporter_flags: # values: disabled, core, extended see https://github.com/HewlettPackard/lustre_exporter#flags
+  ost: extended
+  mdt: extended
+  mgs: extended
+  mds: extended
+  client: extended
+  generic: extended
+  lnet: extended
+  health: extended
