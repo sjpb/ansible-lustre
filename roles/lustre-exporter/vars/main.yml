@@ -1,5 +1,4 @@
 #lustre_exporter_repo: "github.com/marquis-wang/lustre_exporter" # fork of github.com/HewlettPackard/lustre_exporter for lustre 12
 lustre_exporter_repo: "github.com/HewlettPackard/lustre_exporter"
-
-#lustre_exporter_binary: "/usr/local/bin/lustre_exporter/lustre_exporter"
-lustre_exporter_src: "{{ ansible_env.HOME }}/go/src/github.com/HewlettPackard/lustre_exporter"
+lustre_exporter_src: "go/src/github.com/HewlettPackard/lustre_exporter"
+lustre_exporter_binary: "{{ lustre_exporter_builddir}}/{{lustre_exporter_src }}/lustre_exporter"
