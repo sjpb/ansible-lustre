@@ -42,7 +42,10 @@ To run the entire suite on the `um6p-dac-h24c5` environment, use:
     ansible-playbook playbooks/clients.yml
     
 ## Inventory requirements
-TODO: specify here.
+The demo playbooks the following groups:
+- "servers": All nodes which will be Lustre MDS/OSS/MGS.
+- "clients": All nodes which will be Lustre clients.
+- "mgs": A single node from "servers" which is the MGS.
 
 # Assumptions
 
