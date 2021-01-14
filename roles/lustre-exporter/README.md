@@ -79,7 +79,7 @@ The role provides two playbooks:
 License
 -------
 
-See LICENCE in repo root.
+See [../../LICENSE](../../LICENSE).
 
 Author Information
 ------------------
