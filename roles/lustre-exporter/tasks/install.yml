@@ -35,3 +35,10 @@
     owner: root
     group: root
   notify: restart node_exporter
+
+- name: Enable lustre_exporter service
+  systemd:
+    name: lustre_exporter
+    enabled: true
+  when:
+    - not ansible_check_mode
