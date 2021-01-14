@@ -1,0 +1,3 @@
+---
+lustre_exporter_flags:
+    client: disabled

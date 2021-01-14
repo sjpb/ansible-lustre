@@ -6,7 +6,7 @@
     - include_role:
         name: lustre-exporter
       vars:
-        lustre_exporter_state: started
+        lustre_exporter_state: stopped
       
 
       

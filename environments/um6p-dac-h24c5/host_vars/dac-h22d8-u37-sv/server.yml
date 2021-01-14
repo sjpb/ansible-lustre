@@ -12,6 +12,3 @@ lustre_osts:
   17: /dev/nvme9n1
   18: /dev/nvme10n1
   19: /dev/nvme11n1
-lustre_exporter_flags:
-  mgs: disabled
-  client: disabled
