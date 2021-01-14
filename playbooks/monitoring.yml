@@ -4,9 +4,9 @@
 
 - name: Build lustre exporter
   tags: build
-  hosts: localhost # TODO: document
-  gather_facts: true # TODO: document
-  become: false # TODO: document
+  hosts: localhost
+  gather_facts: true
+  become: false
   tasks:
     - include_role:
         name: lustre-exporter
@@ -15,7 +15,7 @@
 - name: Install lustre exporter
   tags: install
   hosts: servers # TODO: really wants to be all
-  become: true # TODO: document
+  become: true
   tasks:
   - include_role:
         name: lustre-exporter

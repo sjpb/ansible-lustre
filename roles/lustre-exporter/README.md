@@ -1,18 +1,48 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Install a Prometheus exporter for [Lustre metrics](https://github.com/HewlettPackard/lustre_exporter), creating a systemd service `lustre_exporter`. Metrics are available on `http://localhost:9169/metrics`.
 
+TODO: add configuration of port and TLS.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The ansible control host host requires `make` installed.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Generally the only variable needing setting is:
+
+- `lustre_exporter_flags`: Optional. Mapping defining which collectors to enable. The default is:
+
+      lustre_exporter_flags:
+        ost: extended
+        mdt: extended
+        mgs: extended
+        mds: extended
+        client: extended
+        generic: extended
+        lnet: extended
+        health: extended
+
+  where values may be one of the following as per [docs](https://github.com/HewlettPackard/lustre_exporter#flags):
+    - `disabled`: Completely disable all metrics for this portion of a source.
+    - `core`: Enable this source, but only for metrics considered to be particularly useful.
+    - `extended`: Enable this source and include all metrics that the Lustre Exporter is aware of within it.
+
+  Generally this will need to be set per host/group. Note that while overriding the default mapping clears all flags, an un-set flag is equivalent to `extended`. So for example for a MGS/MDS/OSS 
+  node where extended metrics are required for all relevant collectors it is sufficent to set the following in `host_vars`:
+  
+      lustre_exporter_flags:
+        client: disabled
+
+For the following role variables the default values are likely to be appropriate:
+- `lustre_exporter_builddir`: Optional. Directory to use (e.g. on deployment host) for exporter build. Default `/tmp/lustre_exporter_build`.
+- `lustre_exporter_installdir`: Optional. Directory on lustre node to install exported. Default `/usr/local/bin`.
+- `lustre_exporter_group`: Optional. Group for lustre exporter. Default `lustre-exp`.
+- `lustre_exporter_user`: Optional. User for lustre exporter. Default `{{ lustre_exporter_group }}`.
 
 Dependencies
 ------------
@@ -22,16 +52,34 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+The role provides two playbooks:
 
-    - hosts: all
-      roles:
-         - ansible-role-template
+  - `build`: Build the exporter. Generally should be run on the ansible control host. Requires facts, does not require become.
+
+        - hosts: localhost
+          gather_facts: true
+          become: false
+          tasks:
+            - include_role:
+                name: lustre-exporter
+                tasks_from: build
+
+  - `install`: Install the exporter onto lustre nodes (servers, clients, routers). Requires become. E.g.:
+
+        - hosts: servers
+          become: true
+          tasks:
+          - include_role:
+                name: lustre-exporter
+                tasks_from: install
+            vars:
+              lustre_exporter_flags:
+                client: disabled      
 
 License
 -------
 
-See license.md
+See LICENCE in repo root.
 
 Author Information
 ------------------

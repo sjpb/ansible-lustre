@@ -1,6 +1,5 @@
 lustre_exporter_builddir: /tmp/lustre_exporter_build
 lustre_exporter_installdir: /usr/local/bin
-lustre_exporter_state: started # started, stopped only currently supported ones
 lustre_exporter_group: "lustre-exp"
 lustre_exporter_user: "{{ lustre_exporter_group }}"
 

@@ -26,4 +26,4 @@
     chdir: "{{ lustre_exporter_builddir}}/{{lustre_exporter_src }}"
     creates: "{{ lustre_exporter_builddir}}/{{lustre_exporter_src }}/lustre_exporter"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ lustre_exporter_builddir}}/go/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ lustre_exporter_builddir}}/go/bin" # NB this requires facts
