@@ -64,7 +64,7 @@
   loop: "{{ lustre_mdts | dict2items }}"
   failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
   changed_when: "command_result.rc == 0"
-  # TODO: add check for lustre_mdts so can have mds only server
+  when: lustre_mdts | default({})
   # TODO: see check against mgs nid above
 
 - name: Format OSTs
@@ -73,8 +73,8 @@
   loop: "{{ lustre_osts  | dict2items }}"
   failed_when: "command_result.rc != 0 and ('was previously formatted for lustre' not in command_result.stderr) and command_result.rc != 17"
   changed_when: "command_result.rc == 0"
-  # TODO: add check for lustre_osts so can have mds/mgs only server
-  # TODO: see above, or maybe use `sudo lfs osts`?
+  when: lustre_osts | default({})
+  # TODO: see check against mgs nid above
 
 - name: Create MGS mount dir
   file:
@@ -112,6 +112,7 @@
   # failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
   # changed_when: "command_result.rc == 0"
   loop: "{{ lustre_mdts | dict2items }}"
+  when: lustre_mdts | default({})
   
 - name: Create OST mount dir
   file:
@@ -126,4 +127,5 @@
   failed_when: "command_result.rc != 0 and ('is already mounted' not in command_result.stderr)"
   changed_when: "command_result.rc == 0"
   loop: "{{ lustre_osts | dict2items }}"
+  when: lustre_osts | default({})
   
