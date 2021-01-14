@@ -1,36 +1,34 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Configure Lustre client.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Configuration is currently only included for Centos 7.8 (untested) and Centos 8.2. (See `vars/main.yml` to extend this).
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- `lustre_lnet`: Optional. Name of lnet. Default `tcp`. **NB** currently this is the only one supported.
+- `lustre_fs_name`: Required. Name of filesystem.
+- `lustre_mount_point`: Optional. Mountpoint on client, will be created if it doesn't exist. Default `/mnt/lustre`.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None, although obviously this is designed to work with the `client` role.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: all
-      roles:
-         - ansible-role-template
+See [../../playbooks/clients.yml](../../playbooks/clients.yml)
 
 License
 -------
 
-See license.md
+See [../../LICENSE](../../LICENSE).
 
 Author Information
 ------------------
