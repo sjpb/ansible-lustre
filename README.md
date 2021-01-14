@@ -19,7 +19,7 @@ The intention is to eventually port the advanced features initially tested [here
 
 ## Use and structure
 
-When used as a demo this repo assumes that the required infrastructure already exists, ie. it does not contain any terraform etc to deploy it. However it is possible to run the same demo on different infrastructures each, of which should have an inventory defined in `environment/<environment-name>/`. The current demo environments are:
+When used as a demo this repo assumes that the required infrastructure already exists, ie. it does not contain any terraform etc to deploy it. However it is possible to run the same demo on different infrastructures, each of which should have an inventory defined in `environment/<environment-name>/`. The current demo environments are:
 - `um6p-dac-h24c5`: For UM6P, uses 2x DAC nodes as servers and 2x physical OpenHPC compute nodes in rack h24c5 as clients.
 
 To make the source of variables clearer, role-specific hostvars are defined in the inventory by hostvar files of the same name as the role, e.g. `hostvars/server0/foo.yml` would set parameters for role `foo` for `server0`.
@@ -56,13 +56,3 @@ The server/client roles only support certain Centos versions (see the vars files
 Note that currently only the default lnet configuration using the `tcp` lnet is supported.
 
 For variables currently see the appropriate `role/<name>/defaults/main.yml` file.
-
-# Lustre hints
-
-To reset lnet (defined in /etc/lnet.conf):
-
-    (umount -t lustre --all)
-    lctl network down
-    lustre_rmmod
-    modprobe lnet -v
-    lctl network up
