@@ -1,8 +1,7 @@
 Role Name
 =========
 
-Configure lustre server components: MGS, MDS and OSS.
-
+Configure lustre server components: MGS, MDS and OSS. **NB: This will change the running kernel, if necessary.**
 
 Requirements
 ------------

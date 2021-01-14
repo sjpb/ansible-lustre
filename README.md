@@ -46,14 +46,11 @@ Working DNS?
 
 # Roles
 
-- `server`: Setup lustre MGS/MDS/OST server (currently only MGS is optional). This will change the running kernel, if necessary.
-- `client`: Setup lustre client.
-- `monitoring`: Setup monitoring - WIP: currently just installs/starts the lustre exporter.
-- `lustre_exporter`: Build and install a lustre_exporter service
+- `server` ([README](roles/server/README.md)): Setup lustre MGS/MDS/OST server (all components are optional). This will change the running kernel, if necessary.
+- `client` ([README](roles/client/README.md)): Setup lustre client.
+- `lustre_exporter` ([README](roles/lustre_exporter/README.md)): Build and install a Prometheus exporter service for lustre metrics.
 - `loopdev`: Used by `playbooks/server.yml` to create a loop device for the MDT.
 
-The server/client roles only support certain Centos versions (see the vars files).
-
-Note that currently only the default lnet configuration using the `tcp` lnet is supported.
-
-For variables currently see the appropriate `role/<name>/defaults/main.yml` file.
+Note that:
+- Server/client roles currently only support certain Centos versions - see READMEs.
+- Only the default lnet configuration using the `tcp` lnet is currently supported.
