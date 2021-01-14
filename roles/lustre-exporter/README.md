@@ -3,6 +3,8 @@ Role Name
 
 Install a Prometheus exporter for [Lustre metrics](https://github.com/HewlettPackard/lustre_exporter), creating a systemd service `lustre_exporter`. Metrics are available on `http://localhost:9169/metrics`.
 
+Some grafana dashboards for this exporter are listed [here](https://github.com/HewlettPackard/lustre_exporter/issues/45#issuecomment-454393303).
+
 TODO: add configuration of port and TLS.
 
 Requirements

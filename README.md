@@ -31,8 +31,8 @@ As well as the inventory, the environment directory also contains an `ansible.cf
 The following playbooks are provided:
 
     `monitoring.yml`: Build a Prometheus exporter for lustre metrics on the ansible control host
-    `servers.yml`: Install and configure Lustre MGS/MDS/OSS servers and monitoring.
-    `clients.yml`: Install Lustre clients and monitoring.
+    `servers.yml`: Install and configure Lustre MGS/MDS/OSS servers and install the lustre exporter.
+    `clients.yml`: Install Lustre clients and and install the lustre exporter.
 
 To run the entire suite on the `um6p-dac-h24c5` environment, use:
 
