@@ -49,6 +49,7 @@ Working DNS?
 - `server`: Setup lustre MGS/MDS/OST server (currently only MGS is optional). This will change the running kernel, if necessary.
 - `client`: Setup lustre client.
 - `monitoring`: Setup monitoring - WIP: currently just installs/starts the lustre exporter.
+- `lustre_exporter`: Build and install a lustre_exporter service
 - `loopdev`: Used by `playbooks/server.yml` to create a loop device for the MDT.
 
 The server/client roles only support certain Centos versions (see the vars files).
