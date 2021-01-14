@@ -1,0 +1,5 @@
+lustre_exporter_flags:
+  ost: disabled
+  mdt: disabled
+  mgs: disabled
+  

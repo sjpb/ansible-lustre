@@ -28,15 +28,19 @@ As well as the inventory, the environment directory also contains an `ansible.cf
 
     ANSIBLE_CONFIG=environments/<environment-name>/ansible.cfg ansible-playbook playbooks/<playbook_name>.yml
 
+The following playbooks are provided:
+
+    `monitoring.yml`: Build a Prometheus exporter for lustre metrics on the ansible control host
+    `servers.yml`: Install and configure Lustre MGS/MDS/OSS servers and monitoring.
+    `clients.yml`: Install Lustre clients and monitoring.
 
 To run the entire suite on the `um6p-dac-h24c5` environment, use:
 
     export ANSIBLE_CONFIG=environments/um6p-dac-h24c5/ansible.cfg
-    ansible-playbook playbooks/server.yml
-    ansible-playbook playbooks/client.yml
-    ansible-playbook playbooks/monitoring.yml # UNDER DEV - currently only partially configures servers!
-
-
+    ansible-playbook playbooks/monitoring.yml
+    ansible-playbook playbooks/servers.yml
+    ansible-playbook playbooks/clients.yml
+    
 ## Inventory requirements
 TODO: specify here.
 
@@ -49,7 +53,7 @@ Working DNS?
 - `server` ([README](roles/server/README.md)): Setup lustre MGS/MDS/OST server (all components are optional). This will change the running kernel, if necessary.
 - `client` ([README](roles/client/README.md)): Setup lustre client.
 - `lustre_exporter` ([README](roles/lustre_exporter/README.md)): Build and install a Prometheus exporter service for lustre metrics.
-- `loopdev`: Used by `playbooks/server.yml` to create a loop device for the MDT.
+- `loopdev`: Used by `playbooks/servers.yml` to create a loop device for the MDT.
 
 Note that:
 - Server/client roles currently only support certain Centos versions - see READMEs.

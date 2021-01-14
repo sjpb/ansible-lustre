@@ -11,20 +11,23 @@
     #   vars:
     #     ofed_repo_file: http://linux.mellanox.com/public/repo/mlnx_ofed/5.1-2.3.7.1/rhel8.2/mellanox_mlnx_ofed.repo
     # - meta: end_play
-    - include_role:
+    - name: Create loop device for MGT
+      include_role:
         name: loopdev
       vars:
         loopdev_path: "/var/mgt"
         loopdev_size: 20000
-        # loopdev_mountpoint: "/mnt/mgt"
       register: loopdev
       when: "'mgs' in group_names"
     - debug:
         msg: "Got loop device {{ loopdev.dev }} ({{ loopdev.fstype }}) for backing file {{ loopdev.path }} "
       when: "'mgs' in group_names"
-    - include_role:
+    - name: Configure lustre servers
+      include_role:
         name: server
       vars:
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
-        lustre_fs_name: 'dac'
-        lustre_reformat: true
+    - name: Install lustre exporter
+      include_role:
+        name: lustre-exporter
+        tasks_from: install

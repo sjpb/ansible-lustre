@@ -5,14 +5,19 @@
   gather_facts: true
   tasks: []
 
-- name: Configure lustre clients
-  hosts: clients
+- hosts: clients
   gather_facts: true
   become: true
   tags: clients
   tasks:
-    - include_role:
+    - name: Configure lustre clients
+      include_role:
         name: client
       vars:
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
         lustre_fs_name: dac
+    - name: Install lustre exporter
+      include_role:
+        name: lustre-exporter
+        tasks_from: install
+        

@@ -1,7 +1,4 @@
 
-# You can use the following on the nodes running the exporter to check it is working
-#   wget -O - http://localhost:9169/metrics
-
 - name: Build lustre exporter
   tags: build
   hosts: localhost
@@ -11,15 +8,3 @@
     - include_role:
         name: lustre-exporter
         tasks_from: build
-
-- name: Install lustre exporter
-  tags: install
-  hosts: servers # TODO: really wants to be all
-  become: true
-  tasks:
-  - include_role:
-        name: lustre-exporter
-        tasks_from: install
-    vars:
-      lustre_exporter_flags:
-        client: disabled      
