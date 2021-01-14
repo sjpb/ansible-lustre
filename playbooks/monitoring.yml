@@ -22,7 +22,4 @@
         tasks_from: install
     vars:
       lustre_exporter_flags:
-        client: disabled
-      
-
-      
+        client: disabled      
