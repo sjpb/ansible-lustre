@@ -18,6 +18,6 @@
         lustre_fs_name: dac
     - name: Install lustre exporter
       include_role:
-        name: lustre-exporter
+        name: exporter
         tasks_from: install
         

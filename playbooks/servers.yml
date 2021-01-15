@@ -29,5 +29,5 @@
         lustre_mgs_addr: "{{ hostvars[groups['mgs'] | first].ansible_p8p2.ipv4.address }}"
     - name: Install lustre exporter
       include_role:
-        name: lustre-exporter
+        name: exporter
         tasks_from: install

@@ -63,7 +63,7 @@ The role provides two playbooks:
           become: false
           tasks:
             - include_role:
-                name: lustre-exporter
+                name: exporter
                 tasks_from: build
 
   - `install`: Install the exporter onto lustre nodes (servers, clients, routers). Requires become. E.g.:
@@ -72,7 +72,7 @@ The role provides two playbooks:
           become: true
           tasks:
           - include_role:
-                name: lustre-exporter
+                name: exporter
                 tasks_from: install
             vars:
               lustre_exporter_flags:

@@ -6,5 +6,5 @@
   become: false
   tasks:
     - include_role:
-        name: lustre-exporter
+        name: exporter
         tasks_from: build

@@ -55,7 +55,7 @@ Working DNS?
 
 - `server` ([README](roles/server/README.md)): Setup lustre MGS/MDS/OST server (all components are optional). This will change the running kernel, if necessary.
 - `client` ([README](roles/client/README.md)): Setup lustre client.
-- `lustre_exporter` ([README](roles/lustre_exporter/README.md)): Build and install a Prometheus exporter service for lustre metrics.
+- `exporter` ([README](roles/exporter/README.md)): Build and install a Prometheus exporter service for lustre metrics.
 - `loopdev`: Used by `playbooks/servers.yml` to create a loop device for the MDT.
 
 Note that:
